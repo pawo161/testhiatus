@@ -5,12 +5,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Ticket, Zap, MapPin, Menu, X, ArrowRight, Speaker, Disc, Terminal } from 'lucide-react';
+import { Ticket, Zap, MapPin, Menu, X, ArrowRight, Speaker, Disc } from 'lucide-react';
 import FluidBackground from './components/FluidBackground';
 import CustomCursor from './components/CustomCursor';
 import ArtistCard from './components/ArtistCard';
 import { Artist } from './types';
-import AIChat from './components/AIChat';
 
 // Hiatus Festival 2025 Lineup Data
 const LINEUP: Artist[] = [
@@ -136,7 +135,6 @@ const App: React.FC = () => {
     <div className="relative min-h-screen text-gray-200 selection:bg-[#ccff00] selection:text-black cursor-none overflow-x-hidden bg-black">
       <CustomCursor />
       <FluidBackground />
-      <AIChat />
       
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-4 md:px-6 md:py-6 mix-blend-difference border-b border-white/20 bg-black/80 backdrop-blur-sm">

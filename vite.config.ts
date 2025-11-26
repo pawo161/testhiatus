@@ -7,8 +7,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     define: {
-      // This allows process.env.API_KEY to work in the browser
-      'process.env.API_KEY': JSON.stringify(env.API_KEY)
+      // API Key removed as feature is disabled
     }
   }
 })

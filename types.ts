@@ -13,12 +13,6 @@ export interface Artist {
   description: string;
 }
 
-export interface ChatMessage {
-  role: 'user' | 'model';
-  text: string;
-  isError?: boolean;
-}
-
 export enum Section {
   HERO = 'hero',
   LINEUP = 'lineup',
