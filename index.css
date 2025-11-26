@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  background-color: #000000;
+  color: #e5e5e5;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: #000000;
+}
+
+/* Hide scrollbar */
+::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  font-family: 'JetBrains Mono', monospace;
+  background-color: #000000;
+  color: #e5e5e5;
+  overflow-x: hidden;
+  margin: 0;
+}
+
+.font-heading {
+  font-family: 'Syncopate', sans-serif;
+}
+
+.scanlines {
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0),
+    rgba(255,255,255,0) 50%,
+    rgba(0,0,0,0.2) 50%,
+    rgba(0,0,0,0.2)
+  );
+  background-size: 100% 4px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 50;
+}
