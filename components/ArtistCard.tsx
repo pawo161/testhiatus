@@ -3,11 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Artist } from '../types';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 interface ArtistCardProps {
   artist: Artist;
@@ -16,73 +15,46 @@ interface ArtistCardProps {
 
 const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onClick }) => {
   return (
-    <motion.div
-      className="group relative h-[400px] md:h-[500px] w-full overflow-hidden border-b md:border-r border-white/10 bg-black cursor-pointer"
-      initial="rest"
-      whileHover="hover"
-      whileTap="hover"
-      animate="rest"
+    <div
+      className="group relative h-[350px] w-full overflow-hidden bg-black cursor-pointer"
       data-hover="true"
       onClick={onClick}
     >
-      {/* Image Background with Zoom */}
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.img 
+      {/* Image */}
+      <div className="absolute inset-0">
+        <img 
           src={artist.image} 
           alt={artist.name} 
-          className="h-full w-full object-cover grayscale will-change-transform"
-          variants={{
-            rest: { scale: 1, opacity: 0.6, filter: 'grayscale(100%)' },
-            hover: { scale: 1.05, opacity: 0.9, filter: 'grayscale(0%)' }
-          }}
-          transition={{ duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
+          className="h-full w-full object-cover grayscale transition-all duration-0 group-hover:grayscale-0 group-hover:contrast-125"
         />
-        <div className="absolute inset-0 bg-black/30 group-hover:bg-[#637ab9]/20 transition-colors duration-500" />
+        <div className="absolute inset-0 bg-black/50 group-hover:bg-transparent transition-all duration-0" />
       </div>
 
-      {/* Overlay Info */}
-      <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-between pointer-events-none">
-        <div className="flex justify-between items-start">
-           <span className="text-xs font-mono border border-white/30 px-2 py-1 rounded-full backdrop-blur-md">
+      {/* Grid Overlay */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 pointer-events-none bg-[length:100%_4px,3px_100%]"></div>
+
+      {/* Info */}
+      <div className="absolute inset-0 p-6 flex flex-col justify-between z-20">
+        <div className="flex justify-between items-start opacity-0 group-hover:opacity-100 transition-opacity duration-0">
+           <span className="text-xs font-mono bg-[#ccff00] text-black px-2 py-1">
              {artist.day}
            </span>
-           <motion.div
-             variants={{
-               rest: { opacity: 0, x: 20, y: -20 },
-               hover: { opacity: 1, x: 0, y: 0 }
-             }}
-             className="bg-white text-black rounded-full p-2 will-change-transform"
-           >
-             <ArrowUpRight className="w-6 h-6" />
-           </motion.div>
+           <ArrowRight className="text-white w-6 h-6 -rotate-45" />
         </div>
 
         <div>
-          <div className="overflow-hidden">
-            <motion.h3 
-              className="font-heading text-3xl md:text-4xl font-bold uppercase text-white mix-blend-difference will-change-transform"
-              variants={{
-                rest: { y: 0 },
-                hover: { y: -5 }
-              }}
-              transition={{ duration: 0.4 }}
-            >
-              {artist.name}
-            </motion.h3>
-          </div>
-          <motion.p 
-            className="text-sm font-medium uppercase tracking-widest text-[#4fb7b3] mt-2 will-change-transform"
-            variants={{
-              rest: { opacity: 0, y: 10 },
-              hover: { opacity: 1, y: 0 }
-            }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-          >
+          <h3 className="font-heading text-2xl font-bold uppercase text-white group-hover:text-[#ccff00] transition-colors duration-0 truncate">
+            {artist.name}
+          </h3>
+          <p className="text-xs font-mono uppercase text-gray-400 mt-1 border-t border-gray-700 pt-2 inline-block">
             {artist.genre}
-          </motion.p>
+          </p>
         </div>
       </div>
-    </motion.div>
+      
+      {/* Hover Border */}
+      <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#ccff00] transition-colors duration-0 pointer-events-none z-30" />
+    </div>
   );
 };
 

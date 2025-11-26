@@ -3,12 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Ticket, Globe, Zap, Music, MapPin, Menu, X, Calendar, Play, ChevronLeft, ChevronRight, Speaker } from 'lucide-react';
+import { Ticket, Zap, MapPin, Menu, X, ArrowRight, Speaker, Disc, Terminal } from 'lucide-react';
 import FluidBackground from './components/FluidBackground';
-import GradientText from './components/GlitchText';
 import CustomCursor from './components/CustomCursor';
 import ArtistCard from './components/ArtistCard';
 import { Artist } from './types';
@@ -84,8 +82,7 @@ const LINEUP: Artist[] = [
 
 const App: React.FC = () => {
   const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+  const y = useTransform(scrollYProgress, [0, 1], [0, 100]); // Parallax
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
   
@@ -109,19 +106,15 @@ const App: React.FC = () => {
     setTimeout(() => {
       setPurchasingIndex(null);
       setPurchasedIndex(index);
-    }, 3500);
+    }, 2000);
   };
 
   const scrollToSection = (id: string) => {
     setMobileMenuOpen(false);
     const element = document.getElementById(id);
     if (element) {
-      const headerOffset = 100;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.scrollY - headerOffset;
-
       window.scrollTo({
-        top: offsetPosition,
+        top: element.offsetTop,
         behavior: 'smooth'
       });
     }
@@ -140,42 +133,46 @@ const App: React.FC = () => {
   };
   
   return (
-    <div className="relative min-h-screen text-white selection:bg-[#4fb7b3] selection:text-black cursor-auto md:cursor-none overflow-x-hidden">
+    <div className="relative min-h-screen text-gray-200 selection:bg-[#ccff00] selection:text-black cursor-none overflow-x-hidden bg-black">
       <CustomCursor />
       <FluidBackground />
       <AIChat />
       
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-6 md:px-8 py-6 mix-blend-difference">
-        <div className="font-heading text-xl md:text-2xl font-bold tracking-tighter text-white cursor-default z-50">HIATUS</div>
+      <nav className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-4 md:px-6 md:py-6 mix-blend-difference border-b border-white/20 bg-black/80 backdrop-blur-sm">
+        <div className="font-heading text-lg md:text-xl font-bold tracking-widest text-white cursor-default z-50 uppercase">
+          [ HIATUS_2025 ]
+        </div>
         
         {/* Desktop Menu */}
-        <div className="hidden md:flex gap-10 text-sm font-bold tracking-widest uppercase">
+        <div className="hidden md:flex gap-12 text-xs font-mono tracking-widest uppercase">
           {['Lineup', 'Info', 'Tickets'].map((item) => (
             <button 
               key={item} 
               onClick={() => scrollToSection(item.toLowerCase())}
-              className="hover:text-[#a8fbd3] transition-colors text-white cursor-pointer bg-transparent border-none"
+              className="hover:text-[#ccff00] transition-colors text-white cursor-pointer bg-transparent border-none flex items-center gap-2 group"
               data-hover="true"
             >
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#ccff00]">{'>'}</span>
               {item}
             </button>
           ))}
         </div>
         <button 
           onClick={() => scrollToSection('tickets')}
-          className="hidden md:inline-block border border-white px-8 py-3 text-xs font-bold tracking-widest uppercase hover:bg-white hover:text-black transition-all duration-300 text-white cursor-pointer bg-transparent"
+          className="hidden md:inline-flex items-center gap-2 border border-white px-6 py-2 text-xs font-mono font-bold uppercase hover:bg-[#ccff00] hover:text-black hover:border-[#ccff00] transition-all duration-0 text-white cursor-pointer bg-transparent"
           data-hover="true"
         >
-          Buy Tickets
+          <Zap className="w-3 h-3" />
+          Acquire Tickets
         </button>
 
         {/* Mobile Menu Toggle */}
         <button 
-          className="md:hidden text-white z-50 relative w-10 h-10 flex items-center justify-center"
+          className="md:hidden text-white z-50 relative w-10 h-10 flex items-center justify-center border border-white/20"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-           {mobileMenuOpen ? <X /> : <Menu />}
+           {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </nav>
 
@@ -183,304 +180,237 @@ const App: React.FC = () => {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-30 bg-[#31326f]/95 backdrop-blur-xl flex flex-col items-center justify-center gap-8 md:hidden"
+            initial={{ opacity: 0, x: '100%' }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: '100%' }}
+            transition={{ type: "tween", duration: 0.3 }}
+            className="fixed inset-0 z-30 bg-black flex flex-col items-start pt-32 px-8 gap-8 md:hidden border-l border-white/20"
           >
-            {['Lineup', 'Info', 'Tickets'].map((item) => (
+            {['Lineup', 'Info', 'Tickets'].map((item, i) => (
               <button
                 key={item}
                 onClick={() => scrollToSection(item.toLowerCase())}
-                className="text-4xl font-heading font-bold text-white hover:text-[#a8fbd3] transition-colors uppercase bg-transparent border-none"
+                className="text-4xl font-heading font-bold text-white hover:text-[#ccff00] transition-colors uppercase bg-transparent border-none flex items-center gap-4"
               >
+                <span className="text-xs font-mono text-gray-600">0{i+1}</span>
                 {item}
               </button>
             ))}
             <button 
               onClick={() => scrollToSection('tickets')}
-              className="mt-8 border border-white px-10 py-4 text-sm font-bold tracking-widest uppercase bg-white text-black"
+              className="mt-8 w-full border border-[#ccff00] px-10 py-4 text-sm font-bold tracking-widest uppercase bg-[#ccff00] text-black"
             >
-              Buy Tickets
+              Get Tickets
             </button>
-            
-            <div className="absolute bottom-10 flex gap-6">
-               <a href="#" className="text-white/50 hover:text-white transition-colors">Facebook</a>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* HERO SECTION */}
-      <header className="relative h-[100svh] min-h-[600px] flex flex-col items-center justify-center overflow-hidden px-4">
+      <header className="relative h-screen min-h-[700px] flex flex-col items-center justify-center overflow-hidden px-4 border-b border-white/20">
         <motion.div 
-          style={{ y, opacity }}
-          className="z-10 text-center flex flex-col items-center w-full max-w-6xl pb-24 md:pb-20"
+          style={{ y }}
+          className="z-10 w-full max-w-[1800px] flex flex-col justify-between h-full py-32 md:py-40"
         >
-           {/* Date / Location */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2 }}
-            className="flex items-center gap-3 md:gap-6 text-xs md:text-base font-mono text-[#a8fbd3] tracking-[0.2em] md:tracking-[0.3em] uppercase mb-4 bg-black/20 px-4 py-2 rounded-full backdrop-blur-sm"
-          >
-            <span>POZNAŃ</span>
-            <span className="w-1.5 h-1.5 md:w-2 md:h-2 bg-[#4fb7b3] rounded-full animate-pulse"/>
-            <span>SCHRON</span>
-            <span className="w-1.5 h-1.5 md:w-2 md:h-2 bg-[#4fb7b3] rounded-full animate-pulse"/>
-            <span>NOV 28-29</span>
-          </motion.div>
+          {/* Top Info */}
+           <div className="flex justify-between items-start w-full px-2 md:px-0">
+              <div className="flex flex-col text-xs md:text-sm font-mono text-gray-400 gap-1">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-[#ccff00]"></span>
+                  <span>STATUS: ONLINE</span>
+                </div>
+                <div>ID: HIATUS_V6.0</div>
+              </div>
+              <div className="text-right text-xs md:text-sm font-mono text-gray-400">
+                <div>LOC: SCHRON_BUNKER</div>
+                <div>LAT: 52.4064° N</div>
+                <div>LON: 16.9252° E</div>
+              </div>
+           </div>
 
           {/* Main Title */}
-          <div className="relative w-full flex justify-center items-center">
-            <GradientText 
-              text="HIATUS" 
-              as="h1" 
-              className="text-[15vw] md:text-[14vw] leading-[0.9] font-black tracking-tighter text-center" 
-            />
-            {/* Optimized Orb */}
-            <motion.div 
-               className="absolute -z-20 w-[50vw] h-[50vw] bg-white/5 blur-[40px] rounded-full pointer-events-none will-change-transform"
-               animate={{ scale: [0.8, 1.2, 0.8], opacity: [0.3, 0.6, 0.3] }}
-               transition={{ duration: 6, repeat: Infinity }}
-               style={{ transform: 'translateZ(0)' }}
-            />
+          <div className="relative w-full text-center">
+            <h1 className="text-[14vw] leading-[0.8] font-heading font-black tracking-tighter text-white mix-blend-exclusion">
+              HIATUS
+            </h1>
+            <h1 className="text-[14vw] leading-[0.8] font-heading font-black tracking-tighter text-transparent stroke-text absolute top-0 left-0 w-full pointer-events-none opacity-50" style={{ WebkitTextStroke: '1px #333' }}>
+              HIATUS
+            </h1>
+            
+            <div className="w-full h-px bg-white/20 my-8 relative overflow-hidden">
+               <motion.div 
+                 className="absolute top-0 left-0 h-full w-1/3 bg-[#ccff00]"
+                 animate={{ x: ['-100%', '300%'] }}
+                 transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+               />
+            </div>
+
+            <div className="flex flex-col md:flex-row justify-between items-center text-xs md:text-sm font-mono tracking-widest uppercase w-full max-w-4xl mx-auto px-4">
+              <span>28-29 NOV 2025</span>
+              <span className="hidden md:inline text-[#ccff00]">//</span>
+              <span>POZNAŃ, PL</span>
+              <span className="hidden md:inline text-[#ccff00]">//</span>
+              <span>AVANT-GARDE ELECTRONICS</span>
+            </div>
           </div>
           
-          <motion.div
-             initial={{ scaleX: 0 }}
-             animate={{ scaleX: 1 }}
-             transition={{ duration: 1.5, delay: 0.5, ease: "circOut" }}
-             className="w-full max-w-md h-px bg-gradient-to-r from-transparent via-white/50 to-transparent mt-4 md:mt-8 mb-6 md:mb-8"
-          />
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 1 }}
-            className="text-base md:text-2xl font-light max-w-xl mx-auto text-white/90 leading-relaxed drop-shadow-lg px-4"
-          >
-            Avant-garde electronics & visual arts
-          </motion.p>
+          <div className="flex justify-center">
+             <ArrowRight className="w-6 h-6 text-white/50 animate-bounce mt-10" />
+          </div>
         </motion.div>
-
-        {/* MARQUEE */}
-        <div className="absolute bottom-12 md:bottom-16 left-0 w-full py-4 md:py-6 bg-white text-black z-20 overflow-hidden border-y-4 border-black shadow-[0_0_40px_rgba(255,255,255,0.4)]">
-          <motion.div 
-            className="flex w-fit will-change-transform"
-            animate={{ x: "-50%" }}
-            transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-          >
-            {[0, 1].map((key) => (
-              <div key={key} className="flex whitespace-nowrap shrink-0">
-                {[...Array(4)].map((_, i) => (
-                  <span key={i} className="text-3xl md:text-7xl font-heading font-black px-8 flex items-center gap-4">
-                    HIATUS 2025 <span className="text-black text-2xl md:text-4xl">●</span> 
-                    POZNAŃ <span className="text-black text-2xl md:text-4xl">●</span> 
-                    ELECTROACOUSTIC <span className="text-black text-2xl md:text-4xl">●</span>
-                  </span>
-                ))}
-              </div>
-            ))}
-          </motion.div>
-        </div>
       </header>
 
       {/* LINEUP SECTION */}
-      <section id="lineup" className="relative z-10 py-20 md:py-32">
-        <div className="max-w-[1600px] mx-auto px-4 md:px-6">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-12 md:mb-16 px-4">
-             <h2 className="text-5xl md:text-8xl font-heading font-bold uppercase leading-[0.9] drop-shadow-lg break-words w-full md:w-auto">
-              Lineup <br/> 
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#a8fbd3] to-[#4fb7b3]">2025</span>
+      <section id="lineup" className="relative z-10 border-b border-white/20">
+        <div className="grid grid-cols-1 md:grid-cols-12 min-h-screen">
+          {/* Sidebar Label */}
+          <div className="hidden md:flex md:col-span-1 border-r border-white/20 items-center justify-center bg-black">
+            <h2 className="text-xl font-heading font-bold uppercase -rotate-90 whitespace-nowrap tracking-widest text-[#ccff00]">
+              Index / Artists
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-t border-l border-white/10 bg-black/20 backdrop-blur-sm">
-            {LINEUP.map((artist) => (
-              <ArtistCard key={artist.id} artist={artist} onClick={() => setSelectedArtist(artist)} />
-            ))}
+          <div className="col-span-1 md:col-span-11">
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+              {LINEUP.map((artist, idx) => (
+                <div key={artist.id} className={`border-b border-white/20 ${idx % 4 !== 3 ? 'md:border-r' : ''}`}>
+                  <ArtistCard artist={artist} onClick={() => setSelectedArtist(artist)} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* EXPERIENCE / INFO SECTION */}
-      <section id="info" className="relative z-10 py-20 md:py-32 bg-black/20 backdrop-blur-sm border-t border-white/10 overflow-hidden">
-        <div className="absolute top-1/2 right-[-20%] w-[50vw] h-[50vw] bg-[#4fb7b3]/20 rounded-full blur-[40px] pointer-events-none will-change-transform" style={{ transform: 'translateZ(0)' }} />
-
-        <div className="max-w-7xl mx-auto px-4 md:px-6 relative">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-16 items-center">
-            <div className="lg:col-span-5 order-2 lg:order-1">
-              <h2 className="text-4xl md:text-7xl font-heading font-bold mb-6 md:mb-8 leading-tight">
-                6th <br/> <GradientText text="EDITION" className="text-5xl md:text-8xl" />
-              </h2>
-              <p className="text-lg md:text-xl text-gray-200 mb-8 md:mb-12 font-light leading-relaxed drop-shadow-md">
-                Hiatus is an interdisciplinary festival focused on avant-garde electroacoustic, electronic, and improvised music, as well as visual arts.
-                <br/><br/>
-                This year, we descend into the depths of <strong>SCHRON</strong>.
-              </p>
+      {/* INFO SECTION */}
+      <section id="info" className="relative z-10 border-b border-white/20 bg-white text-black">
+        <div className="max-w-[1800px] mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
+            <div className="p-8 md:p-20 border-b lg:border-b-0 lg:border-r border-black/10 flex flex-col justify-between min-h-[600px]">
+              <div>
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-3 h-3 bg-black"></div>
+                  <span className="font-mono text-sm tracking-widest uppercase">Mission Statement</span>
+                </div>
+                <h2 className="text-5xl md:text-8xl font-heading font-black mb-10 leading-[0.9]">
+                  NOISE<br/>SIGNAL<br/>VOID
+                </h2>
+                <p className="text-xl md:text-2xl font-mono leading-relaxed max-w-xl">
+                  Hiatus is an interdisciplinary festival focused on avant-garde electroacoustic, electronic, and improvised music. 
+                  <br/><br/>
+                  We occupy the brutalist concrete structures of <strong>SCHRON</strong> to create a temporary autonomous zone of sound and light.
+                </p>
+              </div>
               
-              <div className="space-y-6 md:space-y-8">
-                {[
-                  { icon: Speaker, title: 'Main Stage', desc: 'Hirjjo, Fausto Mercier, Abul Mogard, HDMIRROR, Avtomat, Dtekk' },
-                  { icon: Zap, title: 'DJ Stage', desc: 'czaszko-wężo-róża, KAROLINDA, DiV4, LAIZA, szczupakola, Siberialist' },
-                  { icon: Globe, title: 'Visual Arts', desc: 'Immersive AV shows by Afterimage, Fascia & more.' },
-                ].map((feature, i) => (
-                  <div
-                    key={i} 
-                    className="flex items-start gap-6"
-                  >
-                    <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/5">
-                      <feature.icon className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg md:text-xl font-bold mb-1 md:mb-2 font-heading">{feature.title}</h4>
-                      <p className="text-sm text-gray-300">{feature.desc}</p>
-                    </div>
-                  </div>
-                ))}
+              <div className="grid grid-cols-2 gap-8 mt-12 font-mono text-sm border-t border-black/10 pt-8">
+                <div>
+                  <div className="font-bold mb-2 uppercase">/ Organizer</div>
+                  <div>Stowarzyszenie Twórcownia</div>
+                </div>
+                <div>
+                  <div className="font-bold mb-2 uppercase">/ Partners</div>
+                  <div>Urząd Marszałka Województwa Wielkopolskiego, Miasto Poznań</div>
+                </div>
               </div>
             </div>
 
-            <div className="lg:col-span-7 relative h-[400px] md:h-[700px] w-full order-1 lg:order-2">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#637ab9] to-[#4fb7b3] rounded-3xl rotate-3 opacity-30 blur-xl" />
-              <div className="relative h-full w-full rounded-3xl overflow-hidden border border-white/10 group shadow-2xl">
-                <img 
-                  src="https://images.unsplash.com/photo-1544211197-27b9c97b819f?q=80&w=1000&auto=format&fit=crop" 
-                  alt="Hiatus Atmosphere" 
-                  className="h-full w-full object-cover grayscale transition-transform duration-[1.5s] group-hover:scale-110 will-change-transform" 
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
-                
-                <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10">
-                  <div className="text-5xl md:text-8xl font-heading font-bold text-transparent bg-clip-text bg-gradient-to-b from-white to-white/0 opacity-50">
-                    28-29
+            <div className="relative h-[500px] lg:h-auto bg-black overflow-hidden group">
+               {/* Image effect */}
+               <img 
+                 src="https://images.unsplash.com/photo-1594961556667-07409477e5d8?q=80&w=1000&auto=format&fit=crop" 
+                 className="absolute inset-0 w-full h-full object-cover grayscale opacity-50 group-hover:opacity-80 transition-opacity duration-500 group-hover:scale-105 transform"
+                 alt="Bunker Texture" 
+               />
+               <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-40 mix-blend-overlay"></div>
+               
+               <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full bg-gradient-to-t from-black to-transparent">
+                  <div className="font-heading text-6xl text-white mb-2">SCHRON</div>
+                  <div className="font-mono text-[#ccff00] text-lg uppercase flex items-center gap-2">
+                    <MapPin size={16} /> Bunker Location // Poznań
                   </div>
-                  <div className="text-lg md:text-xl font-bold tracking-widest uppercase mt-2 text-white">
-                    November 2025
-                  </div>
-                </div>
-              </div>
+               </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* TICKETS SECTION */}
-      <section id="tickets" className="relative z-10 py-20 md:py-32 px-4 md:px-6 bg-black/30 backdrop-blur-lg">
+      <section id="tickets" className="relative z-10 py-20 md:py-32 px-4 md:px-6 bg-black">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12 md:mb-20">
-             <h2 className="text-5xl md:text-9xl font-heading font-bold opacity-20 text-white">
-               TICKETS
-             </h2>
-             <p className="text-[#a8fbd3] font-mono uppercase tracking-widest -mt-3 md:-mt-8 relative z-10 text-sm md:text-base">
-               Presale & Gate
-             </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { name: '1-Day Pass', price: '70 PLN', subtitle: 'Presale', desc: 'Valid for Friday or Saturday', color: 'white', accent: 'bg-white/5' },
-              { name: '2-Day Pass', price: '120 PLN', subtitle: 'Presale', desc: 'Full experience Fri & Sat', color: 'teal', accent: 'bg-[#4fb7b3]/10 border-[#4fb7b3]/50' },
-              { name: 'On The Door', price: '140 PLN', subtitle: 'Gate Price', desc: '140 PLN (2-Day), 80 PLN (1-Day)', color: 'periwinkle', accent: 'bg-[#637ab9]/10 border-[#637ab9]/50' },
-            ].map((ticket, i) => {
-              const isPurchasing = purchasingIndex === i;
-              const isPurchased = purchasedIndex === i;
-              const isDisabled = (purchasingIndex !== null) || (purchasedIndex !== null) || i === 2; // Disable purchase for Gate info
+          <div className="border border-white/20 p-1 md:p-2">
+            <div className="border border-white/20 p-8 md:p-16">
+              <div className="text-center mb-16">
+                <h2 className="text-4xl md:text-6xl font-heading font-bold uppercase mb-4 text-white">Access Protocol</h2>
+                <p className="font-mono text-gray-400 text-sm">/// SELECT YOUR TIER</p>
+              </div>
 
-              return (
-                <motion.div
-                  key={i}
-                  whileHover={isDisabled ? {} : { y: -20 }}
-                  className={`relative p-8 md:p-10 border border-white/10 backdrop-blur-md flex flex-col min-h-[450px] md:min-h-[550px] transition-colors duration-300 ${ticket.accent} ${isDisabled && !isPurchased && i !== 2 ? 'opacity-50 grayscale' : ''} will-change-transform`}
-                  data-hover={!isDisabled}
-                >
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-                  
-                  <div className="flex-1">
-                    <h3 className="text-2xl md:text-3xl font-heading font-bold mb-4 text-white">{ticket.name}</h3>
-                    <div className="text-sm font-mono text-gray-400 mb-2 uppercase">{ticket.subtitle}</div>
-                    <div className={`text-4xl md:text-5xl font-bold mb-8 md:mb-10 tracking-tighter ${ticket.color === 'white' ? 'text-white' : ticket.color === 'teal' ? 'text-[#4fb7b3]' : 'text-[#637ab9]'}`}>
-                      {ticket.price}
-                    </div>
-                    <p className="text-gray-300 mb-6">{ticket.desc}</p>
-                    <ul className="space-y-4 md:space-y-6 text-sm text-gray-200">
-                      <li className="flex items-center gap-3"><Ticket className="w-5 h-5 text-gray-400" /> Schron Access</li>
-                      {i === 2 && <li className="flex items-center gap-3"><Zap className="w-5 h-5 text-[#a8fbd3]" /> After 04:00 Entry: 40 PLN</li>}
-                    </ul>
-                  </div>
-                  
-                  <button 
-                    onClick={() => handlePurchase(i)}
-                    disabled={isDisabled}
-                    className={`w-full py-4 text-sm font-bold uppercase tracking-[0.2em] border border-white/20 transition-all duration-300 mt-8 group overflow-hidden relative 
-                      ${isPurchased 
-                        ? 'bg-[#a8fbd3] text-black border-[#a8fbd3] cursor-default' 
-                        : isPurchasing 
-                          ? 'bg-white/20 text-white cursor-wait'
-                          : isDisabled 
-                            ? 'cursor-default opacity-80' 
-                            : 'text-white cursor-pointer hover:bg-white hover:text-black'
-                      }`}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-white/20">
+                {[
+                  { name: 'FRI / SAT', price: '70 PLN', type: 'SINGLE DAY', color: 'text-white' },
+                  { name: 'FULL PASS', price: '120 PLN', type: 'WEEKEND', color: 'text-[#ccff00]' },
+                  { name: 'GATE', price: '140 PLN', type: 'FULL PASS', color: 'text-gray-400' },
+                ].map((ticket, i) => (
+                  <div 
+                    key={i} 
+                    className={`
+                      relative p-8 md:p-12 border-b md:border-b-0 md:border-r border-white/20 last:border-0 hover:bg-white/5 transition-colors group
+                      ${i === 1 ? 'bg-white/5' : ''}
+                    `}
                   >
-                    <span className="relative z-10">
-                      {i === 2 ? 'Info Only' : isPurchasing ? 'Processing...' : isPurchased ? 'Ticket Selected' : 'Select Ticket'}
-                    </span>
-                    {/* Only show hover effect if actionable */}
-                    {!isDisabled && !isPurchased && !isPurchasing && (
-                      <div className="absolute inset-0 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 ease-out -z-0" />
-                    )}
-                  </button>
-                  
-                  {isPurchased && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-xs text-center mt-3 text-white/40 font-mono"
+                    <div className="font-mono text-xs text-gray-500 mb-4 flex justify-between">
+                      <span>REF: 00{i+1}</span>
+                      {i === 1 && <span className="text-[#ccff00] animate-pulse">RECOMMENDED</span>}
+                    </div>
+                    <div className={`text-3xl md:text-5xl font-bold font-heading mb-2 ${ticket.color}`}>{ticket.price}</div>
+                    <div className="text-sm font-mono font-bold uppercase mb-8">{ticket.name}</div>
+                    
+                    <ul className="text-xs font-mono text-gray-400 space-y-2 mb-8">
+                       <li>[x] Bunker Access</li>
+                       <li>[x] AV Shows</li>
+                       <li>{i === 2 ? '[ ] Pre-sale price' : '[x] Pre-sale price'}</li>
+                    </ul>
+
+                    <button 
+                      onClick={() => handlePurchase(i)}
+                      className={`
+                        w-full py-4 text-xs font-bold uppercase tracking-widest border border-white/20 
+                        hover:bg-[#ccff00] hover:text-black hover:border-[#ccff00] transition-all duration-0
+                        ${purchasingIndex === i ? 'bg-white text-black' : ''}
+                      `}
                     >
-                      Redirecting to Biletomat...
-                    </motion.p>
-                  )}
-                </motion.div>
-              );
-            })}
-          </div>
-          
-          <div className="mt-12 text-center">
-            <a 
-              href="https://www.biletomat.pl/hiatus-festival-2025-poznan" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-block border-b border-white/50 pb-1 text-white hover:text-[#4fb7b3] transition-colors"
-            >
-              Buy online at Biletomat.pl
-            </a>
+                      {purchasingIndex === i ? 'PROCESSING...' : 'INITIATE'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="mt-8 text-center font-mono text-xs text-gray-500">
+                SECURE TRANSACTION via BILETOMAT.PL
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <footer className="relative z-10 border-t border-white/10 py-12 md:py-16 bg-black/80 backdrop-blur-xl">
+      <footer className="relative z-10 border-t border-white/20 py-12 bg-black">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
           <div>
-             <div className="font-heading text-3xl md:text-4xl font-bold tracking-tighter mb-4 text-white">HIATUS</div>
-             <div className="flex flex-col gap-2 text-xs font-mono text-gray-400">
-               <span>Organizer: Stowarzyszenie Twórcownia</span>
-               <span>Partners: Urząd Marszałka Województwa Wielkopolskiego, Miasto Poznań, Schron</span>
+             <div className="font-heading text-2xl font-bold tracking-tight mb-4 text-white uppercase">HIATUS // 2025</div>
+             <div className="flex flex-col gap-2 text-xs font-mono text-gray-500 uppercase">
+               <span>Org: Stowarzyszenie Twórcownia</span>
+               <span>Partners: UMWW, Poznań, Schron</span>
              </div>
           </div>
           
-          <div className="flex gap-6 md:gap-8 flex-wrap">
-            <a href="#" className="text-gray-400 hover:text-white font-bold uppercase text-xs tracking-widest transition-colors cursor-pointer" data-hover="true">
-              Facebook
-            </a>
-            <a href="#" className="text-gray-400 hover:text-white font-bold uppercase text-xs tracking-widest transition-colors cursor-pointer" data-hover="true">
-              Instagram
-            </a>
+          <div className="flex gap-8 font-mono text-xs uppercase">
+            <a href="#" className="text-gray-500 hover:text-[#ccff00] hover:underline">[ Facebook ]</a>
+            <a href="#" className="text-gray-500 hover:text-[#ccff00] hover:underline">[ Instagram ]</a>
+            <a href="#" className="text-gray-500 hover:text-[#ccff00] hover:underline">[ Resident Advisor ]</a>
           </div>
         </div>
       </footer>
 
-      {/* Artist Detail Modal */}
+      {/* Artist Detail Modal - Brutalist Style */}
       <AnimatePresence>
         {selectedArtist && (
           <motion.div
@@ -488,88 +418,58 @@ const App: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedArtist(null)}
-            className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-md cursor-auto"
+            className="fixed inset-0 z-[60] flex items-center justify-center p-0 md:p-8 bg-black/90 cursor-auto"
           >
             <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-5xl bg-[#1a1b3b] border border-white/10 overflow-hidden flex flex-col md:flex-row shadow-2xl shadow-[#4fb7b3]/10 group/modal"
+              className="relative w-full max-w-6xl bg-black border border-white/30 flex flex-col md:flex-row h-full md:h-auto max-h-screen overflow-y-auto md:overflow-hidden"
             >
               {/* Close Button */}
               <button
                 onClick={() => setSelectedArtist(null)}
-                className="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/50 text-white hover:bg-white hover:text-black transition-colors"
+                className="absolute top-0 right-0 z-20 p-4 bg-[#ccff00] text-black hover:bg-white transition-colors"
                 data-hover="true"
               >
                 <X className="w-6 h-6" />
               </button>
 
-              {/* Navigation Buttons */}
-              <button
-                onClick={(e) => { e.stopPropagation(); navigateArtist('prev'); }}
-                className="absolute left-4 bottom-4 translate-y-0 md:top-1/2 md:bottom-auto md:-translate-y-1/2 z-20 p-3 rounded-full bg-black/50 text-white hover:bg-white hover:text-black transition-colors border border-white/10 backdrop-blur-sm"
-                data-hover="true"
-                aria-label="Previous Artist"
-              >
-                <ChevronLeft className="w-6 h-6" />
-              </button>
-
-              <button
-                onClick={(e) => { e.stopPropagation(); navigateArtist('next'); }}
-                className="absolute right-4 bottom-4 translate-y-0 md:top-1/2 md:bottom-auto md:-translate-y-1/2 z-20 p-3 rounded-full bg-black/50 text-white hover:bg-white hover:text-black transition-colors border border-white/10 backdrop-blur-sm md:right-8"
-                data-hover="true"
-                aria-label="Next Artist"
-              >
-                <ChevronRight className="w-6 h-6" />
-              </button>
-
               {/* Image Side */}
-              <div className="w-full md:w-1/2 h-64 md:h-auto relative overflow-hidden">
-                <AnimatePresence mode="wait">
-                  <motion.img 
-                    key={selectedArtist.id}
-                    src={selectedArtist.image} 
-                    alt={selectedArtist.name} 
-                    initial={{ opacity: 0, scale: 1.1 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className="absolute inset-0 w-full h-full object-cover grayscale mix-blend-overlay opacity-80"
-                  />
-                </AnimatePresence>
-                <div className="absolute inset-0 bg-[#31326f] mix-blend-multiply opacity-60" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1a1b3b] via-transparent to-transparent md:bg-gradient-to-r" />
+              <div className="w-full md:w-1/2 h-64 md:h-auto relative border-b md:border-b-0 md:border-r border-white/20">
+                <img 
+                  src={selectedArtist.image} 
+                  alt={selectedArtist.name} 
+                  className="w-full h-full object-cover grayscale contrast-125"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50" />
+                <div className="absolute bottom-4 left-4 bg-black px-2 py-1 text-xs font-mono text-[#ccff00] border border-[#ccff00]">
+                  IMG_REF: {selectedArtist.id}
+                </div>
               </div>
 
               {/* Content Side */}
-              <div className="w-full md:w-1/2 p-8 pb-24 md:p-12 flex flex-col justify-center relative">
-                <motion.div
-                  key={selectedArtist.id}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.4, delay: 0.1 }}
-                >
-                  <div className="flex items-center gap-3 text-[#4fb7b3] mb-4">
-                     <Calendar className="w-4 h-4" />
-                     <span className="font-mono text-sm tracking-widest uppercase">{selectedArtist.day}</span>
-                  </div>
-                  
-                  <h3 className="text-4xl md:text-6xl font-heading font-bold uppercase leading-none mb-2 text-white">
-                    {selectedArtist.name}
-                  </h3>
-                  
-                  <p className="text-lg text-[#a8fbd3] font-medium tracking-widest uppercase mb-6">
-                    {selectedArtist.genre}
-                  </p>
-                  
-                  <div className="h-px w-20 bg-white/20 mb-6" />
-                  
-                  <p className="text-gray-300 leading-relaxed text-lg font-light mb-8">
-                    {selectedArtist.description}
-                  </p>
-                </motion.div>
+              <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-[#050505]">
+                <div className="flex items-center gap-4 mb-6">
+                   <span className="font-mono text-xs bg-white text-black px-2 py-1">{selectedArtist.day}</span>
+                   <span className="font-mono text-xs border border-white/30 text-gray-400 px-2 py-1 uppercase">{selectedArtist.genre}</span>
+                </div>
+                
+                <h3 className="text-4xl md:text-7xl font-heading font-bold uppercase leading-[0.85] mb-8 text-white">
+                  {selectedArtist.name}
+                </h3>
+                
+                <p className="font-mono text-gray-300 leading-relaxed text-sm md:text-base border-l-2 border-[#ccff00] pl-6">
+                  {selectedArtist.description}
+                </p>
+                
+                <div className="mt-12 flex gap-4">
+                  <div className="h-2 w-2 bg-[#ccff00] animate-pulse"></div>
+                  <div className="h-2 w-2 bg-[#ccff00] animate-pulse delay-75"></div>
+                  <div className="h-2 w-2 bg-[#ccff00] animate-pulse delay-150"></div>
+                </div>
               </div>
             </motion.div>
           </motion.div>
